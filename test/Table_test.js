@@ -20,6 +20,9 @@ contract('Table', function (accounts) {
         const noColumns = Number(await table.noColumns());
         const noRows = Number(await table.noRows());
         
+        console.log('noColumns', noColumns);
+        console.log('noRows', noRows);
+        
         assert.equal(noColumns, 4);
         assert.equal(noRows, 1);
     });

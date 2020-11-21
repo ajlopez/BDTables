@@ -13,8 +13,14 @@ contract Table {
     function addRow(bytes32[] memory fields) public {
         uint256 offset = noRows * noColumns;
         
-        for (uint256 k = 0; k < noColumns; k++)
-            data[offset + k] = fields[k];
+        for (uint256 k = 0; k < noColumns; k++) {
+            assembly {              
+                sstore(
+                    add(k, add(data_slot, offset)),
+                    mload(add(32, add(fields, mul(k, 0x20))))
+                )
+            }
+        }
         
         noRows++;
     }
