@@ -4,6 +4,8 @@ contract Table {
     uint256 public noRows;
     uint256 public noColumns;
     
+    uint256 constant MAX_INT = uint256(-1);
+    
     bytes32[1000] public data;
     
     constructor(uint256 _noColumns) public {
@@ -51,5 +53,32 @@ contract Table {
                 )
             }
         }
+    }
+    
+    function queryRow(
+        uint256 fromRow,
+        uint256 toRow,
+        uint256 noColumn,
+        bytes32 value
+    ) public view returns (uint256) {
+        uint256 offset = fromRow * noColumns + noColumn;
+        
+        if (toRow >= noRows)
+            toRow = noRows - 1;
+        
+        for (uint256 noRow = fromRow; noRow <= toRow; noRow++) {
+            bytes32 cell;
+            
+            assembly {
+                cell := sload(add(data_slot, offset))
+            }
+            
+            if (cell == value)
+                return noRow;
+            
+            offset += noColumns;
+        }
+        
+        return MAX_INT;
     }
 }
