@@ -7,4 +7,8 @@ contract Table {
     constructor(uint256 _noColumns) public {
         noColumns = _noColumns;
     }
+    
+    function addRow(bytes32[] memory fields) public {
+        noRows++;
+    }
 }
