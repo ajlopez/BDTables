@@ -4,7 +4,7 @@ contract Table {
     uint256 public noRows;
     uint256 public noColumns;
     
-    bytes32[1000] data;
+    bytes32[1000] public data;
     
     constructor(uint256 _noColumns) public {
         noColumns = _noColumns;
@@ -14,7 +14,7 @@ contract Table {
         uint256 offset = noRows * noColumns;
         
         for (uint256 k = 0; k < noColumns; k++)
-            data[offset + k] = fields[4];
+            data[offset + k] = fields[k];
         
         noRows++;
     }
