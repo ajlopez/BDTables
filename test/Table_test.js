@@ -20,9 +20,6 @@ contract('Table', function (accounts) {
         const noColumns = Number(await table.noColumns());
         const noRows = Number(await table.noRows());
         
-        console.log('noColumns', noColumns);
-        console.log('noRows', noRows);
-        
         assert.equal(noColumns, 4);
         assert.equal(noRows, 1);
     });
@@ -61,6 +58,30 @@ contract('Table', function (accounts) {
         const row2 = await table.getRow(1);
         
         checkRowData(row2, 1, 4);
+    });
+    
+    it('add, update and get row', async function () {
+        const table = await Table.new(4);
+        
+        await table.addRow(createRowData(0, 4));
+
+        const noColumns = Number(await table.noColumns());
+        const noRows = Number(await table.noRows());
+        
+        assert.equal(noColumns, 4);
+        assert.equal(noRows, 1);
+        
+        await table.updateRow(0, createRowData(1, 4));
+        
+        const noColumns2 = Number(await table.noColumns());
+        const noRows2 = Number(await table.noRows());
+        
+        assert.equal(noColumns2, 4);
+        assert.equal(noRows2, 1);
+
+        const row = await table.getRow(0);
+        
+        checkRowData(row, 1, 4);
     });
 });
 

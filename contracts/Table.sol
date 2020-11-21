@@ -25,6 +25,19 @@ contract Table {
         noRows++;
     }
     
+    function updateRow(uint256 noRow, bytes32[] memory fields) public {
+        uint256 offset = noRow * noColumns;
+        
+        for (uint256 k = 0; k < noColumns; k++) {
+            assembly {              
+                sstore(
+                    add(k, add(data_slot, offset)),
+                    mload(add(32, add(fields, mul(k, 0x20))))
+                )
+            }
+        }
+    }
+    
     function getRow(uint256 noRow) public view returns (bytes32[] memory fields) {
         fields = new bytes32[](noColumns);
         
