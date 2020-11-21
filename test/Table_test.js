@@ -3,6 +3,7 @@ Table = artifacts.require('Table');
 
 contract('Table', function (accounts) {
     const MAX_INT = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    const DATA_OFFSET = 1000;
     
     describe('initial tests', function () {
         const NO_COLUMNS = 4;
@@ -10,7 +11,7 @@ contract('Table', function (accounts) {
         let table;
         
         beforeEach(async function () {
-            table = await Table.new(NO_COLUMNS);
+            table = await Table.new(NO_COLUMNS, DATA_OFFSET);
         });
         
         it('create contract', async function () {          
@@ -86,14 +87,14 @@ contract('Table', function (accounts) {
         });
     });
     
-    describe.only('query row', function () {
+    describe('query row', function () {
         const NO_COLUMNS = 4;
         const NO_ROWS = 4;
     
         let table;
         
         before(async function () {
-            table = await Table.new(NO_COLUMNS);
+            table = await Table.new(NO_COLUMNS, DATA_OFFSET);
             
             for (let k = 0; k < NO_ROWS; k++)
                 await table.addRow(createRowData(k, NO_COLUMNS));

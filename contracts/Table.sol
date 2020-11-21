@@ -3,22 +3,22 @@ pragma solidity ^0.6.0;
 contract Table {
     uint256 public noRows;
     uint256 public noColumns;
+    uint256 public dataOffset;
     
     uint256 constant MAX_INT = uint256(-1);
     
-    bytes32[1000] public data;
-    
-    constructor(uint256 _noColumns) public {
+    constructor(uint256 _noColumns, uint256 _dataOffset) public {
         noColumns = _noColumns;
+        dataOffset = _dataOffset;
     }
     
     function addRow(bytes32[] memory fields) public {
-        uint256 offset = noRows * noColumns;
+        uint256 offset = noRows * noColumns + dataOffset;
         
         for (uint256 k = 0; k < noColumns; k++) {
             assembly {              
                 sstore(
-                    add(k, add(data_slot, offset)),
+                    add(k, offset),
                     mload(add(32, add(fields, mul(k, 0x20))))
                 )
             }
@@ -28,12 +28,12 @@ contract Table {
     }
     
     function updateRow(uint256 noRow, bytes32[] memory fields) public {
-        uint256 offset = noRow * noColumns;
+        uint256 offset = noRow * noColumns + dataOffset;
         
         for (uint256 k = 0; k < noColumns; k++) {
             assembly {              
                 sstore(
-                    add(k, add(data_slot, offset)),
+                    add(k, offset),
                     mload(add(32, add(fields, mul(k, 0x20))))
                 )
             }
@@ -43,13 +43,13 @@ contract Table {
     function getRow(uint256 noRow) public view returns (bytes32[] memory fields) {
         fields = new bytes32[](noColumns);
         
-        uint256 offset = noRow * noColumns;
+        uint256 offset = noRow * noColumns + dataOffset;
         
         for (uint256 k = 0; k < noColumns; k++) {
             assembly {              
                 mstore(
                     add(32, add(fields, mul(k, 0x20))),
-                    sload(add(k, add(data_slot, offset)))
+                    sload(add(k, offset))
                 )
             }
         }
@@ -61,7 +61,7 @@ contract Table {
         uint256 noColumn,
         bytes32 value
     ) public view returns (uint256) {
-        uint256 offset = fromRow * noColumns + noColumn;
+        uint256 offset = fromRow * noColumns + noColumn + dataOffset;
         
         if (toRow >= noRows)
             toRow = noRows - 1;
@@ -70,7 +70,7 @@ contract Table {
             bytes32 cell;
             
             assembly {
-                cell := sload(add(data_slot, offset))
+                cell := sload(offset)
             }
             
             if (cell == value)
