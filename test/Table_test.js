@@ -15,7 +15,7 @@ contract('Table', function (accounts) {
     it('add row', async function () {
         const table = await Table.new(4);
         
-        await table.addRow([ '0x01', '0x02', '0x03', '0x04' ]);
+        await table.addRow(createRowData(0, 4));
         
         const noColumns = Number(await table.noColumns());
         const noRows = Number(await table.noRows());
@@ -27,7 +27,7 @@ contract('Table', function (accounts) {
     it('add and get row', async function () {
         const table = await Table.new(4);
         
-        await table.addRow([ toBytes32(1), toBytes32(2), toBytes32(3), toBytes32(4) ]);
+        await table.addRow(createRowData(0, 4));
         const row = await table.getRow(0);
         
         const noColumns = Number(await table.noColumns());
@@ -36,16 +36,51 @@ contract('Table', function (accounts) {
         assert.equal(noColumns, 4);
         assert.equal(noRows, 1);
         
-        assert.ok(row);
-        assert.ok(Array.isArray(row));
-        assert.equal(row.length, 4);
+        checkRowData(row, 0, 4);
+    });
+    
+    it('add and get two rows', async function () {
+        const table = await Table.new(4);
         
-        assert.equal(row[0], 1);
-        assert.equal(row[1], 2);
-        assert.equal(row[2], 3);
-        assert.equal(row[3], 4);
+        await table.addRow(createRowData(0, 4));
+        await table.addRow(createRowData(1, 4));
+
+        const noColumns = Number(await table.noColumns());
+        const noRows = Number(await table.noRows());
+        
+        assert.equal(noColumns, 4);
+        assert.equal(noRows, 2);
+        
+        const row = await table.getRow(0);
+        
+        checkRowData(row, 0, 4);
+        
+        const row2 = await table.getRow(1);
+        
+        checkRowData(row2, 1, 4);
     });
 });
+
+function createRowData(nrow, ncolumns) {
+    const fields = [];
+    const initial = nrow * ncolumns + 1;
+    
+    for (let k = 0; k < ncolumns; k++)
+        fields.push(toBytes32(initial + k));
+    
+    return fields;
+}
+
+function checkRowData(row, nrow, ncolumns) {
+    assert.ok(row);
+    assert.ok(Array.isArray(row));
+    assert.equal(row.length, ncolumns);
+    
+    const initial = nrow * ncolumns + 1;
+    
+    for (let k = 0; k < ncolumns; k++)
+        assert.equal(row[k], initial + k);
+}
 
 function toBytes32(value) {
     let result = value.toString(16);
@@ -55,3 +90,4 @@ function toBytes32(value) {
     
     return '0x' + result;
 }
+
