@@ -30,7 +30,13 @@ contract Table {
         
         uint256 offset = noRow * noColumns;
         
-        for (uint256 k = 0; k < noColumns; k++)
-            fields[k] = data[offset + k];
+        for (uint256 k = 0; k < noColumns; k++) {
+            assembly {              
+                mstore(
+                    add(32, add(fields, mul(k, 0x20))),
+                    sload(add(k, add(data_slot, offset)))
+                )
+            }
+        }
     }
 }
