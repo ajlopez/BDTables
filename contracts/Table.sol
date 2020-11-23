@@ -55,6 +55,31 @@ contract Table {
         }
     }
     
+    function deleteRow(uint256 noRow) public {
+        uint256 offset = noRow * noColumns + dataOffset;
+        uint256 offset2 = (noRows - 1) * noColumns + dataOffset;
+        
+        for (uint256 k = 0; k < noColumns; k++) {
+            if (offset != offset2) {
+                assembly {
+                    sstore(
+                        add(k, offset),
+                        sload(add(k, offset2))
+                    )
+                }
+            }
+            
+            assembly {              
+                sstore(
+                    add(k, offset2),
+                    0
+                )
+            }
+        }
+        
+        noRows--;
+    }
+    
     function queryRow(
         uint256 fromRow,
         uint256 toRow,

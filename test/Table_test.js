@@ -134,6 +134,60 @@ contract('Table', function (accounts) {
             assert.equal(noRow, NO_ROWS - 1);
         });
     });
+    
+    describe('delete row', function () {
+        const NO_COLUMNS = 4;
+        const NO_ROWS = 4;
+    
+        let table;
+        
+        beforeEach(async function () {
+            table = await Table.new(NO_COLUMNS, DATA_OFFSET);
+            
+            for (let k = 0; k < NO_ROWS; k++)
+                await table.addRow(createRowData(k, NO_COLUMNS));
+            
+            const row = await table.getRow(0);
+            
+            checkRowData(row, 0, NO_COLUMNS);
+        });
+        
+        it('delete first row', async function () {
+            await table.deleteRow(0);
+            
+            const noRows = await table.noRows();
+            
+            assert.equal(noRows, 3);
+            
+            checkRowData(await table.getRow(0), 3, NO_COLUMNS);
+            checkRowData(await table.getRow(1), 1, NO_COLUMNS);
+            checkRowData(await table.getRow(2), 2, NO_COLUMNS);
+        });
+        
+        it('delete second row', async function () {
+            await table.deleteRow(1);
+            
+            const noRows = await table.noRows();
+            
+            assert.equal(noRows, 3);
+            
+            checkRowData(await table.getRow(0), 0, NO_COLUMNS);
+            checkRowData(await table.getRow(1), 3, NO_COLUMNS);
+            checkRowData(await table.getRow(2), 2, NO_COLUMNS);
+        });
+        
+        it('delete last row', async function () {
+            await table.deleteRow(3);
+            
+            const noRows = await table.noRows();
+            
+            assert.equal(noRows, 3);
+            
+            checkRowData(await table.getRow(0), 0, NO_COLUMNS);
+            checkRowData(await table.getRow(1), 1, NO_COLUMNS);
+            checkRowData(await table.getRow(2), 2, NO_COLUMNS);
+        });
+    });
 });
 
 function createRowData(nrow, ncolumns) {
