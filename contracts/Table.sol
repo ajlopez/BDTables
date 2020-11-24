@@ -41,6 +41,8 @@ contract Table {
     }
     
     function getRow(uint256 noRow) public view returns (bytes32[] memory fields) {
+        require(noRow < noRows, "unknown row");
+        
         fields = new bytes32[](noColumns);
         
         uint256 offset = noRow * noColumns + dataOffset;

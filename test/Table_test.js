@@ -1,5 +1,7 @@
 
-Table = artifacts.require('Table');
+const Table = artifacts.require('Table');
+
+const truffleAssert = require('truffle-assertions');
 
 contract('Table', function (accounts) {
     const MAX_INT = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
@@ -84,6 +86,18 @@ contract('Table', function (accounts) {
             const row = await table.getRow(0);
             
             checkRowData(row, 1, NO_COLUMNS);
+        });
+        
+        it('cannot retrieve non existant row', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 1);
+            
+            await truffleAssert.reverts(table.getRow(1));
         });
     });
     
