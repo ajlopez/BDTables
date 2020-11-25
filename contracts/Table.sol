@@ -58,6 +58,8 @@ contract Table {
     }
     
     function deleteRow(uint256 noRow) public {
+        require(noRow < noRows, "unknown row");
+        
         uint256 offset = noRow * noColumns + dataOffset;
         uint256 offset2 = (noRows - 1) * noColumns + dataOffset;
         

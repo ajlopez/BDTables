@@ -201,6 +201,19 @@ contract('Table', function (accounts) {
             checkRowData(await table.getRow(1), 1, NO_COLUMNS);
             checkRowData(await table.getRow(2), 2, NO_COLUMNS);
         });
+        
+        it('cannot delete non existant row', async function () {
+            await truffleAssert.reverts(table.deleteRow(4));
+            
+            const noRows = await table.noRows();
+            
+            assert.equal(noRows, 4);
+            
+            checkRowData(await table.getRow(0), 0, NO_COLUMNS);
+            checkRowData(await table.getRow(1), 1, NO_COLUMNS);
+            checkRowData(await table.getRow(2), 2, NO_COLUMNS);
+            checkRowData(await table.getRow(3), 3, NO_COLUMNS);
+        });
     });
 });
 
