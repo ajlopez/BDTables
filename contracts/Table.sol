@@ -58,6 +58,9 @@ contract Table {
     }
     
     function getField(uint256 noRow, uint256 noColumn) public view returns(bytes32 field) {
+        require(noRow < noRows, "unknown row");
+        require(noColumn < noColumns, "unknown column");
+
         uint256 offset = noRow * noColumns + noColumn + dataOffset;
         
         assembly {
