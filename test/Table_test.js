@@ -88,6 +88,23 @@ contract('Table', function (accounts) {
             checkRowData(row, 1, NO_COLUMNS);
         });
         
+        it.only('add rows and get field', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            const field00 = await table.getField(0, 0);
+            const field12 = await table.getField(1, 2);
+            
+            assert.equal(field00, 1);
+            assert.equal(field12, 7);
+        });
+        
         it('cannot retrieve non existant row', async function () {
             await table.addRow(createRowData(0, NO_COLUMNS));
 

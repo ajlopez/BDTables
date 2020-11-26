@@ -57,6 +57,14 @@ contract Table {
         }
     }
     
+    function getField(uint256 noRow, uint256 noColumn) public view returns(bytes32 field) {
+        uint256 offset = noRow * noColumns + noColumn + dataOffset;
+        
+        assembly {
+                field := sload(offset)
+        }
+    }
+    
     function deleteRow(uint256 noRow) public {
         require(noRow < noRows, "unknown row");
         
