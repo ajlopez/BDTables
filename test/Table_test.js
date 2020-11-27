@@ -88,6 +88,28 @@ contract('Table', function (accounts) {
             checkRowData(row, 1, NO_COLUMNS);
         });
         
+        it('cannot update unknown row', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 1);
+            
+            await truffleAssert.reverts(table.updateRow(1, createRowData(1, NO_COLUMNS)));
+            
+            const noColumns2 = Number(await table.noColumns());
+            const noRows2 = Number(await table.noRows());
+            
+            assert.equal(noColumns2, NO_COLUMNS);
+            assert.equal(noRows2, 1);
+
+            const row = await table.getRow(0);
+            
+            checkRowData(row, 0, NO_COLUMNS);
+        });
+        
         it('add rows and get field', async function () {
             await table.addRow(createRowData(0, NO_COLUMNS));
             await table.addRow(createRowData(1, NO_COLUMNS));

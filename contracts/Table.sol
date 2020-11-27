@@ -28,6 +28,8 @@ contract Table {
     }
     
     function updateRow(uint256 noRow, bytes32[] memory fields) public {
+        require(noRow < noRows, "unknown row");
+        
         uint256 offset = noRow * noColumns + dataOffset;
         
         for (uint256 k = 0; k < noColumns; k++) {
