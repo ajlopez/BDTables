@@ -153,6 +153,55 @@ contract('Table', function (accounts) {
             await truffleAssert.reverts(table.getField(2, 0));
         });
         
+        it('set field', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            const newData = createRowData(2, NO_COLUMNS)[2];
+            
+            await table.setField(1, 2, newData);
+            
+            const field = await table.getField(1, 2);
+            
+            assert.equal(field, newData);
+        });
+        
+        it('cannot set field in unknown column', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            const newData = createRowData(2, NO_COLUMNS)[2];
+
+            await truffleAssert.reverts(table.setField(0, NO_COLUMNS, newData));
+        });
+        
+        it('cannot set field in unknown row', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            const newData = createRowData(2, NO_COLUMNS)[2];
+
+            await truffleAssert.reverts(table.setField(2, 0, newData));
+        });
+
         it('cannot retrieve non existant row', async function () {
             await table.addRow(createRowData(0, NO_COLUMNS));
 

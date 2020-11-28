@@ -70,6 +70,17 @@ contract Table {
         }
     }
     
+    function setField(uint256 noRow, uint256 noColumn, bytes32 field) public {
+        require(noRow < noRows, "unknown row");
+        require(noColumn < noColumns, "unknown column");
+
+        uint256 offset = noRow * noColumns + noColumn + dataOffset;
+        
+        assembly {
+            sstore(offset, field)
+        }
+    }
+    
     function deleteRow(uint256 noRow) public {
         require(noRow < noRows, "unknown row");
         
