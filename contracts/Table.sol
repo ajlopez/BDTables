@@ -59,6 +59,27 @@ contract Table {
         }
     }
     
+    function getFields(uint256 fromRow, uint256 toRow, uint256 noColumn) public view returns (bytes32[] memory fields) {
+        require(noColumn < noColumns, "unknown column");
+        require(fromRow <= toRow, "invalid row range");
+        
+        uint256 nfields = toRow - fromRow + 1;
+        fields = new bytes32[](nfields);
+        
+        uint256 offset = fromRow * noColumns + dataOffset + noColumn;
+        
+        for (uint256 k = 0; k < nfields; k++) {
+            assembly {              
+                mstore(
+                    add(32, add(fields, mul(k, 0x20))),
+                    sload(offset)
+                )
+            }
+            
+            offset += noColumns;
+        }
+    }
+    
     function getField(uint256 noRow, uint256 noColumn) public view returns(bytes32 field) {
         require(noRow < noRows, "unknown row");
         require(noColumn < noColumns, "unknown column");

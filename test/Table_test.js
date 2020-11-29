@@ -153,6 +153,49 @@ contract('Table', function (accounts) {
             await truffleAssert.reverts(table.getField(2, 0));
         });
         
+        it('add rows and get fields', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            const fields = await table.getFields(0, 1, 2);
+            
+            assert.equal(fields.length, 2);
+            assert.equal(fields[0], 3);
+            assert.equal(fields[1], 7);
+        });
+        
+        it('cannot retrieve fields from unknown column', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            await truffleAssert.reverts(table.getFields(0, 1, NO_COLUMNS));
+        });
+        
+        it('cannot retrieve fields from invalid row range', async function () {
+            await table.addRow(createRowData(0, NO_COLUMNS));
+            await table.addRow(createRowData(1, NO_COLUMNS));
+
+            const noColumns = Number(await table.noColumns());
+            const noRows = Number(await table.noRows());
+            
+            assert.equal(noColumns, NO_COLUMNS);
+            assert.equal(noRows, 2);
+            
+            await truffleAssert.reverts(table.getFields(2, 0, 0));
+        });
+        
         it('set field', async function () {
             await table.addRow(createRowData(0, NO_COLUMNS));
             await table.addRow(createRowData(1, NO_COLUMNS));
