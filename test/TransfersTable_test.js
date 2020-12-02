@@ -6,20 +6,20 @@ contract('TransferTable', function (accounts) {
     const alice = accounts[0];
     const bob = accounts[1];
     
-    it('initial state', async function () {
-        const transfersTable = await TransfersTable.new();
-        
-        const table = await Table.at(await transfersTable.table());
-        
+    let transfersTable;
+    let table;
+    
+    beforeEach(async function () {
+        transfersTable = await TransfersTable.new();        
+        table = await Table.at(await transfersTable.table());
+    });
+    
+    it('initial state', async function () {        
         assert.equal(Number(await table.noColumns()), 3);
         assert.equal(Number(await table.noRows()), 0);
     });
     
     it('add row', async function () {
-        const transfersTable = await TransfersTable.new();
-        
-        const table = await Table.at(await transfersTable.table());
-        
         await transfersTable.addRow(alice, bob, 1000);
         
         assert.equal(Number(await table.noColumns()), 3);
@@ -35,10 +35,6 @@ contract('TransferTable', function (accounts) {
     });
     
     it('add row and get row', async function () {
-        const transfersTable = await TransfersTable.new();
-        
-        const table = await Table.at(await transfersTable.table());
-        
         await transfersTable.addRow(alice, bob, 1000);
         
         const result = await transfersTable.getRow(0);
