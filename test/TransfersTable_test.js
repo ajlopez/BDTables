@@ -2,6 +2,8 @@
 const Table = artifacts.require('Table');
 const TransfersTable = artifacts.require('TransfersTable');
 
+const truffleAssert = require('truffle-assertions');
+
 contract('TransferTable', function (accounts) {
     const alice = accounts[0];
     const bob = accounts[1];
@@ -50,6 +52,40 @@ contract('TransferTable', function (accounts) {
         await transfersTable.addRow(alice, bob, 1000);
         await transfersTable.addRow(alice, charlie, 2000);
         await transfersTable.addRow(charlie, dan, 300);
+        
+        assert.equal(Number(await table.noColumns()), 3);
+        assert.equal(Number(await table.noRows()), 3);
+    });
+    
+    it('add rows and delete row', async function () {
+        await transfersTable.addRow(alice, bob, 1000);
+        await transfersTable.addRow(alice, charlie, 2000);
+        await transfersTable.addRow(charlie, dan, 300);
+        
+        transfersTable.deleteRow(1)
+        
+        assert.equal(Number(await table.noColumns()), 3);
+        assert.equal(Number(await table.noRows()), 2);
+        
+        const result = await transfersTable.getRow(0);
+        
+        assert.equal(result.from, alice);
+        assert.equal(result.to, bob);
+        assert.equal(Number(result.amount), 1000);
+
+        const result2 = await transfersTable.getRow(1);
+        
+        assert.equal(result2.from, charlie);
+        assert.equal(result2.to, dan);
+        assert.equal(Number(result2.amount), 300);
+    });
+    
+    it('cannot delete unknow row', async function () {
+        await transfersTable.addRow(alice, bob, 1000);
+        await transfersTable.addRow(alice, charlie, 2000);
+        await transfersTable.addRow(charlie, dan, 300);
+        
+        await truffleAssert.reverts(transfersTable.deleteRow(3));
         
         assert.equal(Number(await table.noColumns()), 3);
         assert.equal(Number(await table.noRows()), 3);

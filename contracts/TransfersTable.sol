@@ -28,5 +28,9 @@ contract TransfersTable {
         to = address(uint256(fields[1]));
         amount = uint256(fields[2]);
     }
+    
+    function deleteRow(uint256 noRow) public {
+        table.deleteRow(noRow);
+    }
 }
 
