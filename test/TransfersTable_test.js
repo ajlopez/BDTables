@@ -5,6 +5,8 @@ const TransfersTable = artifacts.require('TransfersTable');
 contract('TransferTable', function (accounts) {
     const alice = accounts[0];
     const bob = accounts[1];
+    const charlie = accounts[2];
+    const dan = accounts[3];
     
     let transfersTable;
     let table;
@@ -42,6 +44,15 @@ contract('TransferTable', function (accounts) {
         assert.equal(result.from, alice);
         assert.equal(result.to, bob);
         assert.equal(Number(result.amount), 1000);
+    });
+    
+    it('add rows', async function () {
+        await transfersTable.addRow(alice, bob, 1000);
+        await transfersTable.addRow(alice, charlie, 2000);
+        await transfersTable.addRow(charlie, dan, 300);
+        
+        assert.equal(Number(await table.noColumns()), 3);
+        assert.equal(Number(await table.noRows()), 3);
     });
 });
 
