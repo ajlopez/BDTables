@@ -10,6 +10,12 @@ contract('ExpensesTable', function (accounts) {
     const charlie = accounts[2];
     const dan = accounts[3];
     
+    const MAX_INT = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+    const OP_EQUAL = 0;
+    const OP_GREATER = 1;
+    const OP_LESS = 2;
+    
     let expensesTable;
     let table;
     
@@ -98,6 +104,38 @@ contract('ExpensesTable', function (accounts) {
         await expensesTable.addRow("ether", 300);
         
         await truffleAssert.reverts(expensesTable.updateRow(3, "silver", 6000));
+    });
+    
+    it('query row by amount equals to value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_EQUAL, 2000), 1);
+    });    
+    
+    it('query row by amount greater than value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_GREATER, 1000), 1);
+    });
+    
+    it('query row by amount less than value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_LESS, 500), 2);
+    });    
+    
+    it('query row by amount not found', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal((await expensesTable.queryAmount(0, 2, OP_LESS, 100)).toString(16), MAX_INT);
     });    
 });
 
