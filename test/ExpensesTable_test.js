@@ -13,8 +13,11 @@ contract('ExpensesTable', function (accounts) {
     const MAX_INT = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
     const OP_EQUAL = 0;
-    const OP_GREATER = 1;
-    const OP_LESS = 2;
+    const OP_NOT_EQUAL = 1;
+    const OP_GREATER = 2;
+    const OP_GREATER_OR_EQUAL = 3;
+    const OP_LESS = 4;
+    const OP_LESS_OR_EQUAL = 5;
     
     let expensesTable;
     let table;
@@ -114,6 +117,14 @@ contract('ExpensesTable', function (accounts) {
         assert.equal(await expensesTable.queryAmount(0, 2, OP_EQUAL, 2000), 1);
     });    
     
+    it('query row by amount not equals to value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_NOT_EQUAL, 1000), 1);
+    });    
+    
     it('query row by amount greater than value', async function () {
         await expensesTable.addRow("food", 1000);
         await expensesTable.addRow("clothes", 2000);
@@ -122,12 +133,28 @@ contract('ExpensesTable', function (accounts) {
         assert.equal(await expensesTable.queryAmount(0, 2, OP_GREATER, 1000), 1);
     });
     
+    it('query row by amount greater or equal than value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_GREATER_OR_EQUAL, 1000), 0);
+    });
+    
     it('query row by amount less than value', async function () {
         await expensesTable.addRow("food", 1000);
         await expensesTable.addRow("clothes", 2000);
         await expensesTable.addRow("ether", 300);
         
         assert.equal(await expensesTable.queryAmount(0, 2, OP_LESS, 500), 2);
+    });    
+    
+    it('query row by amount less or equal than value', async function () {
+        await expensesTable.addRow("food", 1000);
+        await expensesTable.addRow("clothes", 2000);
+        await expensesTable.addRow("ether", 300);
+        
+        assert.equal(await expensesTable.queryAmount(0, 2, OP_LESS_OR_EQUAL, 300), 2);
     });    
     
     it('query row by amount not found', async function () {
