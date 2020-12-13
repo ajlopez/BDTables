@@ -1,12 +1,11 @@
 pragma solidity ^0.6.0;
 
 import './Table.sol';
+import './ExtendedTable.sol';
 
-contract TransfersTable {
-    Table public table;
-    
+contract TransfersTable is ExtendedTable {
     constructor() public {
-        table = new Table(3, 1000);
+        initialize(3, 1000);
     }
     
     function addRow(address from, address to, uint256 amount) public {
